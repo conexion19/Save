@@ -1,7 +1,7 @@
 local httpService = game:GetService("HttpService")
 
 local SaveManager = {} do
-	SaveManager.Folder = "FluentSettings"
+	SaveManager.Folder = "HeliosSettings"
 	SaveManager.Ignore = {}
 	SaveManager.Parser = {
 		Toggle = {
@@ -10,7 +10,7 @@ local SaveManager = {} do
 			end,
 			Load = function(idx, data)
 				if SaveManager.Options[idx] then 
-					SaveManager.Options[idx]:SetValue(data.value)
+					pcall(function() SaveManager.Options[idx]:SetValue(data.value) end)
 				end
 			end,
 		},
@@ -20,7 +20,7 @@ local SaveManager = {} do
 			end,
 			Load = function(idx, data)
 				if SaveManager.Options[idx] then 
-					SaveManager.Options[idx]:SetValue(data.value)
+					pcall(function() SaveManager.Options[idx]:SetValue(data.value) end)
 				end
 			end,
 		},
@@ -30,7 +30,7 @@ local SaveManager = {} do
 			end,
 			Load = function(idx, data)
 				if SaveManager.Options[idx] then 
-					SaveManager.Options[idx]:SetValue(data.value)
+					pcall(function() SaveManager.Options[idx]:SetValue(data.value) end)
 				end
 			end,
 		},
@@ -40,7 +40,7 @@ local SaveManager = {} do
 			end,
 			Load = function(idx, data)
 				if SaveManager.Options[idx] then 
-					SaveManager.Options[idx]:SetValueRGB(Color3.fromHex(data.value), data.transparency)
+					pcall(function() SaveManager.Options[idx]:SetValueRGB(Color3.fromHex(data.value), data.transparency) end)
 				end
 			end,
 		},
@@ -50,7 +50,7 @@ local SaveManager = {} do
 			end,
 			Load = function(idx, data)
 				if SaveManager.Options[idx] then 
-					SaveManager.Options[idx]:SetValue(data.key, data.mode)
+					pcall(function() SaveManager.Options[idx]:SetValue(data.key, data.mode) end)
 				end
 			end,
 		},
@@ -61,7 +61,7 @@ local SaveManager = {} do
 			end,
 			Load = function(idx, data)
 				if SaveManager.Options[idx] and type(data.text) == "string" then
-					SaveManager.Options[idx]:SetValue(data.text)
+					pcall(function() SaveManager.Options[idx]:SetValue(data.text) end)
 				end
 			end,
 		},
@@ -118,7 +118,11 @@ local SaveManager = {} do
 
 		for _, option in next, decoded.objects do
 			if self.Parser[option.type] then
-				task.spawn(function() self.Parser[option.type].Load(option.idx, option) end) -- task.spawn() so the config loading wont get stuck.
+				task.spawn(function() 
+                    pcall(function()
+                        self.Parser[option.type].Load(option.idx, option) 
+                    end)
+                end)
 			end
 		end
 
@@ -185,17 +189,15 @@ local SaveManager = {} do
 			local success, err = self:Load(name)
 			if not success then
 				return self.Library:Notify({
-					Title = "Interface",
-					Content = "Config loader",
-					SubContent = "Failed to load autoload config: " .. err,
+					Title = "Config Loader",
+					Content = "Failed to load autoload config: " .. err,
 					Duration = 7
 				})
 			end
 
 			self.Library:Notify({
-				Title = "Interface",
-				Content = "Config loader",
-				SubContent = string.format("Auto loaded config %q", name),
+				Title = "Config Loader",
+				Content = string.format("Auto loaded config %q", name),
 				Duration = 7
 			})
 		end
@@ -216,9 +218,8 @@ local SaveManager = {} do
 
                 if name:gsub(" ", "") == "" then 
                     return self.Library:Notify({
-						Title = "Interface",
-						Content = "Config loader",
-						SubContent = "Invalid config name (empty)",
+						Title = "Config Loader",
+						Content = "Invalid config name (empty)",
 						Duration = 7
 					})
                 end
@@ -226,17 +227,15 @@ local SaveManager = {} do
                 local success, err = self:Save(name)
                 if not success then
                     return self.Library:Notify({
-						Title = "Interface",
-						Content = "Config loader",
-						SubContent = "Failed to save config: " .. err,
+						Title = "Config Loader",
+						Content = "Failed to save config: " .. err,
 						Duration = 7
 					})
                 end
 
 				self.Library:Notify({
-					Title = "Interface",
-					Content = "Config loader",
-					SubContent = string.format("Created config %q", name),
+					Title = "Config Loader",
+					Content = string.format("Created config %q", name),
 					Duration = 7
 				})
 
@@ -251,17 +250,15 @@ local SaveManager = {} do
 			local success, err = self:Load(name)
 			if not success then
 				return self.Library:Notify({
-					Title = "Interface",
-					Content = "Config loader",
-					SubContent = "Failed to load config: " .. err,
+					Title = "Config Loader",
+					Content = "Failed to load config: " .. err,
 					Duration = 7
 				})
 			end
 
 			self.Library:Notify({
-				Title = "Interface",
-				Content = "Config loader",
-				SubContent = string.format("Loaded config %q", name),
+				Title = "Config Loader",
+				Content = string.format("Loaded config %q", name),
 				Duration = 7
 			})
 		end})
@@ -272,17 +269,15 @@ local SaveManager = {} do
 			local success, err = self:Save(name)
 			if not success then
 				return self.Library:Notify({
-					Title = "Interface",
-					Content = "Config loader",
-					SubContent = "Failed to overwrite config: " .. err,
+					Title = "Config Loader",
+					Content = "Failed to overwrite config: " .. err,
 					Duration = 7
 				})
 			end
 
 			self.Library:Notify({
-				Title = "Interface",
-				Content = "Config loader",
-				SubContent = string.format("Overwrote config %q", name),
+				Title = "Config Loader",
+				Content = string.format("Overwrote config %q", name),
 				Duration = 7
 			})
 		end})
@@ -298,9 +293,8 @@ local SaveManager = {} do
 			writefile(self.Folder .. "/settings/autoload.txt", name)
 			AutoloadButton:SetDesc("Current autoload config: " .. name)
 			self.Library:Notify({
-				Title = "Interface",
-				Content = "Config loader",
-				SubContent = string.format("Set %q to auto load", name),
+				Title = "Config Loader",
+				Content = string.format("Set %q to auto load", name),
 				Duration = 7
 			})
 		end})

@@ -46,8 +46,7 @@ local SaveManager = {} do
 		},
 		Keybind = {
 			Save = function(idx, object)
-				local keyVal = typeof(object.Value) == "EnumItem" and object.Value.Name or tostring(object.Value)
-				return { type = "Keybind", idx = idx, mode = object.Mode, key = keyVal }
+				return { type = "Keybind", idx = idx, mode = object.Mode, key = object.Value.Name }
 			end,
 			Load = function(idx, data)
 				if SaveManager.Options[idx] then 
@@ -94,12 +93,7 @@ local SaveManager = {} do
 			if not self.Parser[option.Type] then continue end
 			if self.Ignore[idx] then continue end
 
-			local success, result = pcall(function()
-				return self.Parser[option.Type].Save(idx, option)
-			end)
-			if success and result then
-				table.insert(data.objects, result)
-			end
+			table.insert(data.objects, self.Parser[option.Type].Save(idx, option))
 		end	
 
 		local success, encoded = pcall(httpService.JSONEncode, httpService, data)
@@ -316,4 +310,5 @@ local SaveManager = {} do
 	SaveManager:BuildFolderTree()
 end
 
+setmetatable(SaveManager, { __metatable = "Helios SaveManager" })
 return SaveManager

@@ -310,5 +310,4 @@ local SaveManager = {} do
 	SaveManager:BuildFolderTree()
 end
 
-setmetatable(SaveManager, { __metatable = "Helios SaveManager" })
 return SaveManager

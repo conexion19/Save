@@ -46,7 +46,7 @@ local SaveManager = {} do
 		},
 		Keybind = {
 			Save = function(idx, object)
-				return { type = "Keybind", idx = idx, mode = object.Mode, key = object.Value }
+				return { type = "Keybind", idx = idx, mode = object.Mode, key = object.Value.Name }
 			end,
 			Load = function(idx, data)
 				if SaveManager.Options[idx] then 
@@ -310,4 +310,5 @@ local SaveManager = {} do
 	SaveManager:BuildFolderTree()
 end
 
+setmetatable(SaveManager, { __metatable = "Helios SaveManager" })
 return SaveManager
